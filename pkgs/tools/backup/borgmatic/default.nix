@@ -1,4 +1,4 @@
-{ borgbackup, coreutils, lib, python3Packages, systemd, installShellFiles, borgmatic, testers }:
+{stdenv, borgbackup, coreutils, lib, python3Packages, systemd, supportSystemd ? !stdenv.isDarwin && !stdenv.hostPlatform.isStatic, installShellFiles, borgmatic, testers }:
 
 python3Packages.buildPythonApplication rec {
   pname = "borgmatic";
@@ -26,12 +26,15 @@ python3Packages.buildPythonApplication rec {
     ruamel-yaml
     requests
     setuptools
-  ];
+  ]
+  ++ lib.optional supportSystemd systemd;
 
   postInstall = ''
-    installShellCompletion --cmd borgmatic \
+        installShellCompletion --cmd borgmatic \
       --bash <($out/bin/borgmatic --bash-completion)
+    '';
 
+  preFixup = lib.optionalString supportSystemd ''
     mkdir -p $out/lib/systemd/system
     cp sample/systemd/borgmatic.timer $out/lib/systemd/system/
     # there is another "sleep", so choose the one with the space after it
@@ -41,7 +44,7 @@ python3Packages.buildPythonApplication rec {
                --replace /root/.local/bin/borgmatic $out/bin/borgmatic \
                --replace systemd-inhibit ${systemd}/bin/systemd-inhibit \
                --replace "sleep " "${coreutils}/bin/sleep "
-  '';
+     '';
 
   passthru.tests.version = testers.testVersion { package = borgmatic; };
 
@@ -49,7 +52,7 @@ python3Packages.buildPythonApplication rec {
     description = "Simple, configuration-driven backup software for servers and workstations";
     homepage = "https://torsion.org/borgmatic/";
     license = licenses.gpl3Plus;
-    platforms = platforms.linux;
+    platforms = platforms.unix;
     maintainers = with maintainers; [ imlonghao ];
   };
 }
