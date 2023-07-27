@@ -278,6 +278,12 @@ in
           You can't set services.kubo.settings.Pinning.RemoteServices because the ``config replace`` subcommand used at startup does not work with it.
         '';
       }
+      {
+        assertion = !((lib.versionAtLeast cfg.package.version "0.21") && (builtins.hasAttr "Experimental" cfg.settings) && (builtins.hasAttr "AcceleratedDHTClient" cfg.settings.Experimental));
+        message = ''
+    The `services.kubo.settings.Experimental.AcceleratedDHTClient` option was renamed to `services.kubo.settings.Routing.AcceleratedDHTClient` in Kubo 0.21.
+  '';
+      }
     ];
 
     environment.systemPackages = [ cfg.package ];
@@ -420,6 +426,5 @@ in
     (mkRenamedOptionModule [ "services" "kubo" "gatewayAddress" ] [ "services" "kubo" "settings" "Addresses" "Gateway" ])
     (mkRenamedOptionModule [ "services" "kubo" "apiAddress" ] [ "services" "kubo" "settings" "Addresses" "API" ])
     (mkRenamedOptionModule [ "services" "kubo" "swarmAddress" ] [ "services" "kubo" "settings" "Addresses" "Swarm" ])
-    (mkRenamedOptionModule [ "services" "kubo" "settings" "Experimental" "AcceleratedDHTClient" ] [ "services" "kubo" "settings" "Routing" "AcceleratedDHTClient" ])
   ];
 }
