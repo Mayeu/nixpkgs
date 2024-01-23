@@ -2,7 +2,7 @@
 with lib;
 let
   cfg = config.services.vmagent;
-  settingsFormat = pkgs.formats.json { };
+  settingsFormat = pkgs.formats.yaml { };
 in {
   options.services.vmagent = {
     enable = mkEnableOption (lib.mdDoc "vmagent");
