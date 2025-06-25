@@ -123,8 +123,8 @@ stdenv.mkDerivation (
     buildInputs = buildInputs ++ lib.optionals (escriptBinName != null) [ erlang ];
 
     MIX_ENV = mixEnv;
-    MIX_BUILD_PATH = "_build/${mixEnv}";
-    MIX_DEPS_PATH="deps";
+    #MIX_BUILD_PATH = "_build/${mixEnv}";
+    #MIX_DEPS_PATH="deps";
     MIX_DEBUG = if enableDebugInfo then 1 else 0;
     HEX_OFFLINE = 1;
 
